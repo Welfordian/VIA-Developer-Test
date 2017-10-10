@@ -40,7 +40,7 @@ class ScheduleInvoices extends Command
     public function handle()
     {
         $invoices = Invoice::all(); // Fetch all the invoices 
-
+    
         foreach($invoices as $invoice) // May need to chunk this up
         {
             echo "Invoice #" . $invoice->id . "\n";
@@ -67,7 +67,7 @@ class ScheduleInvoices extends Command
                 }
             }
 
-            echo "\n\n";
+            echo "\n\n"; // Split invoices with whitespace
         }
     }
 }
