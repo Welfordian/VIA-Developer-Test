@@ -41,26 +41,27 @@ class ScheduleInvoices extends Command
     {
         $invoices = Invoice::all(); // Fetch all the invoices 
     
-        foreach($invoices as $invoice) // May need to chunk this up
+        foreach ($invoices as $invoice) // May need to chunk this up
         {
-            echo "Invoice #" . $invoice->id . "\n";
-
             $start_date = new Carbon($invoice->start_date);
 
-            if ($start_date < Carbon::now()) // If the start date has passed (active)
+            if ($start_date < Carbon::now()) // If the start date has passed (active) - We could change this to something like $invoices = Invoice::active();
             {
-                for($i = 0; $i < 3; $i++) // Start at zero as we want to include the original date
+                echo "Invoice #" . $invoice->id . "\n";
+
+                for ($i = 0; $i < 3; $i++) // Start at zero as we want to include the original date
                 {
                     $invoice_ordinal = $i + 1; // Revert to correct order
+                    $gain = $invoice->frequency * $i; // Days / Months to add
 
-                    if($invoice->unit == "day")
+                    if ($invoice->unit == "day")
                     {
-                        $send_date = (new Carbon($invoice->start_date))->addDays($invoice->frequency * $i);
+                        $send_date = (new Carbon($invoice->start_date))->addDaysNoOverflow($gain);
                     }
     
                     if ($invoice->unit == "month")
                     {
-                        $send_date = (new Carbon($invoice->start_date))->addMonths($invoice->frequency * $i);
+                        $send_date = (new Carbon($invoice->start_date))->addMonthsNoOverflow($gain);
                     }
                     
                     echo ordinal_suffix($invoice_ordinal) . " invoice: " . $send_date->format("jS F Y") . "\n";
